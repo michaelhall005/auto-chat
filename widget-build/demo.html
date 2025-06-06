@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget Demo</title>
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: #f3f4f6;
+            font-family: sans-serif;
+        }
+
+        .demo-loaded {
+            color: #2563eb;
+            font-size: 2rem;
+            font-weight: bold;
+            padding: 2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="demo-loaded">Demo page loaded! If you see this text, the HTML is working.<br>The chat widget should
+        appear below.</div>
+
+    <!-- React and ReactDOM (Development versions for better error messages) -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Chat Widget Bundle -->
+    <script src="./dist-widget/chat-widget.umd.cjs"></script>
+    <script>
+        window.initChatWidget();
+    </script>
+</body>
+
+</html>

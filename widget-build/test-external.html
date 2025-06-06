@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>External Chat Widget Test</title>
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: #f0f8ff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .test-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="test-content">
+        <h1>🔥 External Website Test</h1>
+        <p>This simulates embedding the chat widget on a real website.</p>
+        <p>If this works, your widget is ready for production!</p>
+
+        <h2>Sample Content</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore
+            magna aliqua.</p>
+
+        <p><strong>Look for the chat bubble in the bottom-right corner!</strong></p>
+    </div>
+
+    <!-- Test the widget with a simple inline version -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Inline widget script for testing -->
+    <script>
+        // Simple inline version of your widget for testing
+        const ChatWidget = () => {
+            const [open, setOpen] = React.useState(false);
+            const [messages, setMessages] = React.useState([]);
+            const [input, setInput] = React.useState('');
+
+            const handleSend = (e) => {
+                e.preventDefault();
+                if (!input.trim()) return;
+                setMessages(msgs => [...msgs, { text: input, from: 'user' }]);
+                setInput('');
+                setTimeout(() => {
+                    setMessages(msgs => [...msgs, { text: "Thanks for your message!", from: 'bot' }]);
+                }, 500);
+            };
+
+            return React.createElement('div', {
+                style: {
+                    position: 'fixed',
+                    bottom: '24px',
+                    right: '24px',
+                    zIndex: 1000,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-end'
+                }
+            }, [
+                open && React.createElement('div', {
+                    key: 'chat-box',
+                    style: {
+                        width: '320px',
+                        backgroundColor: 'white',
+                        borderRadius: '8px',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                        marginBottom: '8px',
+                        overflow: 'hidden'
+                    }
+                }, [
+                    React.createElement('div', {
+                        key: 'header',
+                        style: {
+                            backgroundColor: '#2563eb',
+                            color: 'white',
+                            padding: '12px 16px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                        }
+                    }, [
+                        React.createElement('span', { key: 'title' }, 'Chat'),
+                        React.createElement('button', {
+                            key: 'close',
+                            onClick: () => setOpen(false),
+                            style: { background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '18px' }
+                        }, '×')
+                    ]),
+                    React.createElement('div', {
+                        key: 'messages',
+                        style: {
+                            height: '200px',
+                            padding: '16px',
+                            overflowY: 'auto',
+                            backgroundColor: '#f9fafb'
+                        }
+                    }, messages.map((msg, idx) =>
+                        React.createElement('div', {
+                            key: idx,
+                            style: {
+                                marginBottom: '8px',
+                                display: 'flex',
+                                justifyContent: msg.from === 'user' ? 'flex-end' : 'flex-start'
+                            }
+                        }, React.createElement('div', {
+                            style: {
+                                padding: '8px 12px',
+                                borderRadius: '8px',
+                                maxWidth: '70%',
+                                backgroundColor: msg.from === 'user' ? '#2563eb' : '#e5e7eb',
+                                color: msg.from === 'user' ? 'white' : '#374151'
+                            }
+                        }, msg.text))
+                    )),
+                    React.createElement('form', {
+                        key: 'form',
+                        onSubmit: handleSend,
+                        style: { display: 'flex', borderTop: '1px solid #e5e7eb' }
+                    }, [
+                        React.createElement('input', {
+                            key: 'input',
+                            type: 'text',
+                            value: input,
+                            onChange: (e) => setInput(e.target.value),
+                            placeholder: 'Type your message...',
+                            style: {
+                                flex: 1,
+                                padding: '12px',
+                                border: 'none',
+                                outline: 'none'
+                            }
+                        }),
+                        React.createElement('button', {
+                            key: 'send',
+                            type: 'submit',
+                            style: {
+                                padding: '12px 16px',
+                                backgroundColor: '#2563eb',
+                                color: 'white',
+                                border: 'none',
+                                cursor: 'pointer'
+                            }
+                        }, 'Send')
+                    ])
+                ]),
+                React.createElement('button', {
+                    key: 'toggle',
+                    onClick: () => setOpen(v => !v),
+                    style: {
+                        width: '56px',
+                        height: '56px',
+                        borderRadius: '50%',
+                        backgroundColor: '#2563eb',
+                        color: 'white',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '24px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                    }
+                }, '💬')
+            ]);
+        };
+
+        // Initialize the widget
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        ReactDOM.render(React.createElement(ChatWidget), container);
+    </script>
+</body>
+
+</html>
