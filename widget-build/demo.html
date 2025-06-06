@@ -27,12 +27,12 @@
     <div class="demo-loaded">Demo page loaded! If you see this text, the HTML is working.<br>The chat widget should
         appear below.</div>
 
-    <!-- React and ReactDOM (Development versions for better error messages) -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- React and ReactDOM (Production versions) -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
     <!-- Chat Widget Bundle -->
-    <script src="./dist-widget/chat-widget.umd.cjs"></script>
+    <script src="./chat-widget.umd.cjs"></script>
     <script>
         window.initChatWidget();
     </script>
