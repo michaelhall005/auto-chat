@@ -2,7 +2,9 @@ import * as React from 'react';
 
 const ChatWidget: React.FC = () => {
     const [open, setOpen] = React.useState(false);
-    const [messages, setMessages] = React.useState<{ text: string; from: 'user' | 'bot' }[]>([]);
+    const [messages, setMessages] = React.useState<{ text: string; from: 'user' | 'bot' }[]>([
+        { text: "Hi! I'm your AI assistant. How can I help you today?", from: 'bot' }
+    ]);
     const [input, setInput] = React.useState('');
     const [isLoading, setIsLoading] = React.useState(false);
     const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
@@ -48,34 +50,69 @@ const ChatWidget: React.FC = () => {
 
     const containerStyle: React.CSSProperties = {
         position: 'fixed',
-        bottom: '24px',
-        right: '24px',
+        bottom: '20px',
+        right: '20px',
         zIndex: 1000,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-end',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        fontFamily: "'Inter', 'Helvetica Neue', 'Arial', sans-serif"
     };
 
     const chatBoxStyle: React.CSSProperties = {
-        width: '320px',
+        width: '380px',
+        height: '600px',
         backgroundColor: 'white',
-        borderRadius: '12px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
-        marginBottom: '8px',
+        borderRadius: '15px',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
+        marginBottom: '15px',
         overflow: 'hidden',
-        border: '1px solid #e5e7eb'
+        display: 'flex',
+        flexDirection: 'column',
+        transform: open ? 'translateY(0) scale(1)' : 'translateY(100px) scale(0.8)',
+        opacity: open ? 1 : 0,
+        transition: 'transform 0.3s ease-out, opacity 0.3s ease-out',
+        pointerEvents: open ? 'auto' : 'none'
     };
 
     const headerStyle: React.CSSProperties = {
-        backgroundColor: '#2563eb',
+        background: 'linear-gradient(to right, #6A11CB 0%, #2575FC 100%)',
         color: 'white',
-        padding: '12px 16px',
+        padding: '15px 20px',
         display: 'flex',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        fontSize: '14px',
-        fontWeight: '600'
+        borderTopLeftRadius: '15px',
+        borderTopRightRadius: '15px',
+        position: 'relative'
+    };
+
+    const avatarStyle: React.CSSProperties = {
+        width: '40px',
+        height: '40px',
+        borderRadius: '50%',
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: '12px',
+        fontSize: '18px'
+    };
+
+    const headerInfoStyle: React.CSSProperties = {
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column'
+    };
+
+    const nameStyle: React.CSSProperties = {
+        fontWeight: '600',
+        fontSize: '1.1em',
+        marginBottom: '2px'
+    };
+
+    const statusStyle: React.CSSProperties = {
+        fontSize: '0.8em',
+        color: 'rgba(255, 255, 255, 0.8)'
     };
 
     const closeButtonStyle: React.CSSProperties = {
@@ -83,76 +120,199 @@ const ChatWidget: React.FC = () => {
         border: 'none',
         color: 'white',
         cursor: 'pointer',
-        fontSize: '18px',
+        fontSize: '1.5em',
         padding: '0',
-        lineHeight: '1'
+        lineHeight: '1',
+        opacity: '0.8',
+        transition: 'opacity 0.2s'
     };
 
-    const messagesStyle: React.CSSProperties = {
-        height: '250px',
-        padding: '16px',
+    const messagesContainerStyle: React.CSSProperties = {
+        flexGrow: 1,
+        padding: '20px',
         overflowY: 'auto',
-        backgroundColor: '#f9fafb'
+        backgroundColor: '#f8f9fa',
+        display: 'flex',
+        flexDirection: 'column'
     };
 
     const messageStyle = (isUser: boolean): React.CSSProperties => ({
-        marginBottom: '8px',
-        display: 'flex',
-        justifyContent: isUser ? 'flex-end' : 'flex-start'
-    });
-
-    const messageBubbleStyle = (isUser: boolean): React.CSSProperties => ({
-        padding: '8px 12px',
-        borderRadius: '12px',
-        maxWidth: '70%',
-        fontSize: '14px',
+        maxWidth: '80%',
+        padding: '12px 16px',
+        borderRadius: '15px',
+        marginBottom: '12px',
         lineHeight: '1.4',
-        backgroundColor: isUser ? '#2563eb' : '#e5e7eb',
-        color: isUser ? 'white' : '#374151'
+        fontSize: '14px',
+        alignSelf: isUser ? 'flex-end' : 'flex-start',
+        backgroundColor: isUser ? '#e8f0fe' : '#e0e0e0',
+        color: isUser ? '#1565c0' : '#333',
+        borderBottomRightRadius: isUser ? '5px' : '15px',
+        borderBottomLeftRadius: isUser ? '15px' : '5px',
+        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+        animation: 'messageSlideIn 0.3s ease-out'
     });
 
-    const formStyle: React.CSSProperties = {
+    const loadingMessageStyle: React.CSSProperties = {
+        maxWidth: '80%',
+        padding: '12px 16px',
+        borderRadius: '15px',
+        marginBottom: '12px',
+        lineHeight: '1.4',
+        fontSize: '14px',
+        alignSelf: 'flex-start',
+        backgroundColor: '#e0e0e0',
+        color: '#666',
+        borderBottomLeftRadius: '5px',
         display: 'flex',
-        borderTop: '1px solid #e5e7eb'
+        alignItems: 'center'
+    };
+
+    const typingDotsStyle: React.CSSProperties = {
+        display: 'inline-flex',
+        alignItems: 'center'
+    };
+
+    const footerStyle: React.CSSProperties = {
+        padding: '15px 20px',
+        borderTop: '1px solid #eee',
+        backgroundColor: 'white',
+        borderBottomLeftRadius: '15px',
+        borderBottomRightRadius: '15px'
+    };
+
+    const inputContainerStyle: React.CSSProperties = {
+        display: 'flex',
+        alignItems: 'center',
+        backgroundColor: '#f0f2f5',
+        borderRadius: '25px',
+        padding: '8px 15px',
+        transition: 'box-shadow 0.2s ease'
     };
 
     const inputStyle: React.CSSProperties = {
         flex: 1,
-        padding: '12px',
         border: 'none',
         outline: 'none',
+        background: 'none',
         fontSize: '14px',
-        backgroundColor: 'transparent'
+        padding: '8px 0',
+        color: '#333'
     };
 
     const sendButtonStyle: React.CSSProperties = {
-        padding: '12px 16px',
-        backgroundColor: isLoading ? '#9ca3af' : '#2563eb',
-        color: 'white',
+        background: 'none',
         border: 'none',
+        color: '#6A11CB',
         cursor: isLoading ? 'not-allowed' : 'pointer',
-        fontSize: '14px',
-        fontWeight: '500'
+        marginLeft: '10px',
+        padding: '8px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '50%',
+        transition: 'background-color 0.2s ease',
+        opacity: isLoading ? 0.5 : 1
     };
 
     const toggleButtonStyle: React.CSSProperties = {
-        width: '56px',
-        height: '56px',
+        width: '60px',
+        height: '60px',
         borderRadius: '50%',
-        backgroundColor: '#2563eb',
+        background: 'linear-gradient(to right, #6A11CB 0%, #2575FC 100%)',
         color: 'white',
         border: 'none',
         cursor: 'pointer',
         fontSize: '24px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        boxShadow: '0 5px 15px rgba(0, 0, 0, 0.2)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        transition: 'background-color 0.2s'
+        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease',
+        transform: open ? 'rotate(135deg)' : 'rotate(0deg)'
     };
 
+    // Add styles to document head for animations
+    React.useEffect(() => {
+        const styleId = 'chat-widget-animations';
+        if (!document.getElementById(styleId)) {
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = `
+                @keyframes messageSlideIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                @keyframes typingDots {
+                    0%, 60%, 100% {
+                        transform: translateY(0);
+                    }
+                    30% {
+                        transform: translateY(-4px);
+                    }
+                }
+                .typing-dot {
+                    width: 6px;
+                    height: 6px;
+                    background-color: #666;
+                    border-radius: 50%;
+                    margin: 0 1px;
+                    animation: typingDots 1.4s infinite ease-in-out;
+                }
+                .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+                .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+                .typing-dot:nth-child(3) { animation-delay: 0s; }
+            `;
+            document.head.appendChild(style);
+        }
+    }, []);
+
+    const TypingIndicator = () =>
+        React.createElement('div', { style: typingDotsStyle }, [
+            React.createElement('span', { key: 1, className: 'typing-dot' }),
+            React.createElement('span', { key: 2, className: 'typing-dot' }),
+            React.createElement('span', { key: 3, className: 'typing-dot' })
+        ]);
+
+    const SendIcon = () =>
+        React.createElement('svg', {
+            viewBox: '0 0 24 24',
+            width: '20',
+            height: '20',
+            stroke: 'currentColor',
+            strokeWidth: '2',
+            fill: 'none',
+            strokeLinecap: 'round',
+            strokeLinejoin: 'round'
+        }, [
+            React.createElement('line', { key: 1, x1: '22', y1: '2', x2: '11', y2: '13' }),
+            React.createElement('polygon', { key: 2, points: '22,2 15,22 11,13 2,9 22,2' })
+        ]);
+
+    const ChatIcon = () =>
+        React.createElement('svg', {
+            viewBox: '0 0 24 24',
+            width: '28',
+            height: '28',
+            stroke: 'currentColor',
+            strokeWidth: '2',
+            fill: 'none',
+            strokeLinecap: 'round',
+            strokeLinejoin: 'round'
+        }, [
+            React.createElement('path', {
+                key: 1,
+                d: 'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z'
+            })
+        ]);
+
     return React.createElement('div', { style: containerStyle }, [
-        open && React.createElement('div', {
+        React.createElement('div', {
             key: 'chat-box',
             style: chatBoxStyle
         }, [
@@ -160,38 +320,60 @@ const ChatWidget: React.FC = () => {
                 key: 'header',
                 style: headerStyle
             }, [
-                React.createElement('span', { key: 'title' }, 'Chat'),
+                React.createElement('div', {
+                    key: 'avatar',
+                    style: avatarStyle
+                }, '🤖'),
+                React.createElement('div', {
+                    key: 'info',
+                    style: headerInfoStyle
+                }, [
+                    React.createElement('div', { key: 'name', style: nameStyle }, 'AI Assistant'),
+                    React.createElement('div', { key: 'status', style: statusStyle }, 'Online')
+                ]),
                 React.createElement('button', {
                     key: 'close',
                     onClick: () => setOpen(false),
                     'aria-label': "Close chat",
-                    style: closeButtonStyle
+                    style: closeButtonStyle,
+                    onMouseEnter: (e) => {
+                        (e.target as HTMLElement).style.opacity = '1';
+                    },
+                    onMouseLeave: (e) => {
+                        (e.target as HTMLElement).style.opacity = '0.8';
+                    }
                 }, '×')
             ]),
             React.createElement('div', {
                 key: 'messages',
-                style: messagesStyle
+                style: messagesContainerStyle
             }, [
                 ...messages.map((msg, idx) =>
                     React.createElement('div', {
                         key: idx,
                         style: messageStyle(msg.from === 'user')
-                    }, React.createElement('div', {
-                        style: messageBubbleStyle(msg.from === 'user')
-                    }, msg.text))
+                    }, msg.text)
                 ),
                 isLoading && React.createElement('div', {
                     key: 'loading',
-                    style: messageStyle(false)
-                }, React.createElement('div', {
-                    style: messageBubbleStyle(false)
-                }, 'Thinking...')),
+                    style: loadingMessageStyle
+                }, React.createElement(TypingIndicator)),
                 React.createElement('div', { key: 'scroll-ref', ref: messagesEndRef })
             ]),
-            React.createElement('form', {
-                key: 'form',
+            React.createElement('div', {
+                key: 'footer',
+                style: footerStyle
+            }, React.createElement('form', {
                 onSubmit: handleSend,
-                style: formStyle
+                style: { margin: 0 }
+            }, React.createElement('div', {
+                style: inputContainerStyle,
+                onFocus: (e) => {
+                    (e.currentTarget as HTMLElement).style.boxShadow = '0 0 0 2px rgba(106, 17, 203, 0.2)';
+                },
+                onBlur: (e) => {
+                    (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+                }
             }, [
                 React.createElement('input', {
                     key: 'input',
@@ -206,22 +388,32 @@ const ChatWidget: React.FC = () => {
                     key: 'send',
                     type: "submit",
                     style: sendButtonStyle,
-                    disabled: isLoading
-                }, isLoading ? '...' : 'Send')
-            ])
+                    disabled: isLoading,
+                    onMouseEnter: (e) => {
+                        if (!isLoading) {
+                            (e.target as HTMLElement).style.backgroundColor = 'rgba(106, 17, 203, 0.1)';
+                        }
+                    },
+                    onMouseLeave: (e) => {
+                        (e.target as HTMLElement).style.backgroundColor = 'transparent';
+                    }
+                }, React.createElement(SendIcon))
+            ])))
         ]),
         React.createElement('button', {
             key: 'toggle',
             onClick: () => setOpen((v) => !v),
             style: toggleButtonStyle,
-            'aria-label': "Open chat",
+            'aria-label': open ? "Close chat" : "Open chat",
             onMouseEnter: (e) => {
-                (e.target as HTMLElement).style.backgroundColor = '#1d4ed8';
+                (e.target as HTMLElement).style.transform = `${open ? 'rotate(135deg)' : 'rotate(0deg)'} translateY(-3px)`;
+                (e.target as HTMLElement).style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.3)';
             },
             onMouseLeave: (e) => {
-                (e.target as HTMLElement).style.backgroundColor = '#2563eb';
+                (e.target as HTMLElement).style.transform = open ? 'rotate(135deg)' : 'rotate(0deg)';
+                (e.target as HTMLElement).style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
             }
-        }, '💬')
+        }, open ? '×' : React.createElement(ChatIcon))
     ]);
 };
 
