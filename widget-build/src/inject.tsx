@@ -1,3 +1,4 @@
+import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import ChatWidget from './ChatWidget';
 
@@ -10,5 +11,5 @@ import ChatWidget from './ChatWidget';
         container.id = containerId;
         document.body.appendChild(container);
     }
-    (ReactDOM as any).render(<ChatWidget />, container);
+    (ReactDOM as any).render(React.createElement(ChatWidget), container);
 }; 
