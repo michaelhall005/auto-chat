@@ -11,5 +11,13 @@ import ChatWidget from './ChatWidget';
         container.id = containerId;
         document.body.appendChild(container);
     }
-    (ReactDOM as any).render(React.createElement(ChatWidget), container);
+
+    // Use React 18's createRoot if available, fallback to render for compatibility
+    const ReactDOMClient = (ReactDOM as any).createRoot ? ReactDOM : null;
+    if (ReactDOMClient && (ReactDOM as any).createRoot) {
+        const root = (ReactDOM as any).createRoot(container);
+        root.render(React.createElement(ChatWidget));
+    } else {
+        (ReactDOM as any).render(React.createElement(ChatWidget), container);
+    }
 }; 
