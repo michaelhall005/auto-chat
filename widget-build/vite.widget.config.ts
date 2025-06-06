@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import { copyFileSync } from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
@@ -7,7 +8,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig({
-    plugins: [react()],
+    plugins: [
+        react(),
+        {
+            name: 'copy-demo',
+            writeBundle() {
+                // Copy demo.html to dist-widget directory
+                copyFileSync(
+                    path.resolve(__dirname, 'demo.html'),
+                    path.resolve(__dirname, 'dist-widget/demo.html')
+                );
+            }
+        }
+    ],
     define: {
         'process.env.NODE_ENV': JSON.stringify('production'),
     },
